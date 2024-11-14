@@ -1,0 +1,260 @@
+---
+title: "joint-36-chrom1 Filtering"
+output: pdf_document
+---
+```{r include=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
+```{r include=FALSE, message=FALSE, warning=FALSE}
+# VARIANT BASED STATISTICS
+# Variant quality
+LQUAL <- read_delim("vcftools/vcftools.lqual", delim = "\t",
+         col_names = c("chr", "pos", "qual"), skip = 1,
+         show_col_types = FALSE)
+
+# Variant mean depth
+LDP <- read_delim("vcftools/vcftools.ldepth.mean", delim = "\t",
+       col_names = c("chr", "pos", "mean_depth", "var_depth"), 
+       skip = 1, show_col_types = FALSE)
+ 
+# Variant missingness
+LMISS <- read_delim("vcftools/vcftools.lmiss", delim = "\t",
+         col_names = c("chr", "pos", "nchr", "nfiltered", "nmiss", "fmiss"),
+         skip = 1, show_col_types = FALSE)
+ 
+# Allele frequency
+AFRQ <- read_delim("vcftools/vcftools.frq", delim = "\t",
+        col_names = c("chr", "pos", "nalleles", "nchr", "a1", "a2"), 
+        skip = 1, show_col_types = FALSE)
+
+# Minor allele frequency
+AFRQ$MAF <- AFRQ %>% select(a1, a2) %>% apply(1, function(z) min(z))
+```
+
+
+```{r include=FALSE, message=FALSE, warning=FALSE}
+# INDIVIDUAL BASED STATISTICS
+# Mean depth per individual
+IDP <- read_delim("vcftools/vcftools.idepth", delim = "\t",
+       col_names = c("ind", "nsites", "depth"), 
+       skip = 1, show_col_types = FALSE)
+
+# Missing data per individual
+IMISS <- read_delim("vcftools/vcftools.imiss", delim = "\t",
+         col_names = c("ind", "ndata", "nfiltered", "nmiss", "fmiss"), 
+         skip = 1, show_col_types = FALSE)
+
+# Heterozygosity and inbreeding coefficient per individual
+HET <- read_delim("vcftools/vcftools.het", delim = "\t",
+       col_names = c("ind","ho", "he", "nsites", "f"), 
+       skip = 1, show_col_types = FALSE)
+
+# QualByDepth
+QD <- LQUAL$qual / LDP$mean_depth
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+VQSR <- read_delim("output.table", delim = "\t",
+        col_names = c("POS", "TYPE", "QD", "FS", "SOR", 
+                      "MQ", "MQRankSum", "ReadPosRankSum"), 
+                   skip = 1, show_col_types = FALSE)
+```
+
+---
+
+## Variant quality
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+QUAL <- data.frame(density = na.omit(LQUAL$qual))
+d <- density(QUAL$density, from = min(QUAL$density), to = 30)
+d <- data.frame(x = d$x, y = d$y)
+
+a <- ggplot(LQUAL, aes(qual)) + geom_density(fill = "darkseagreen3", colour = "black", alpha = 0.3)
+
+a + 
+  theme_light() + 
+  xlim(0, 2000) + 
+  geom_vline(xintercept = 30, linetype = 3, color = "red") + 
+  geom_area(data = d, aes(x=x, y=y), fill = "indianred3", alpha = 0.3) + 
+  labs(caption = "Recommended to filter variants with QUAL < 30")
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+summary(LQUAL$qual)
+```
+
+## Variant mean depth
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+DEP <- data.frame(density = na.omit(LDP$mean_depth))
+d <- density(DEP$density, from = min(DEP$density), to = 10)
+d <- data.frame(x = d$x, y = d$y)
+
+a <- ggplot(LDP, aes(mean_depth)) + geom_density(fill = "darkseagreen3", colour = "black", alpha = 0.3)
+
+a + 
+  theme_light() + 
+  xlim(0, 25) + 
+  geom_vline(xintercept = 10, linetype = 3, color = "red") + 
+  geom_area(data = d, aes(x=x, y=y), fill = "indianred3", alpha = 0.3) + 
+  labs(caption = "Recommended to filter variants with depth < 10")
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+summary(LDP$mean_depth)
+```
+
+# Variant missingness
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+a <- ggplot(LMISS, aes(fmiss)) + geom_histogram(fill = "darkseagreen3", colour = "black", alpha = 0.3)
+a + 
+  theme_light() 
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+summary(LMISS$fmiss)
+```
+
+## Minor allele frequency 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+a <- ggplot(AFRQ, aes(MAF)) + geom_density(fill = "darkseagreen3", colour = "black", alpha = 0.3)
+a + 
+  theme_light() + 
+  xlim(0, 0.2)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+summary(AFRQ$MAF)
+```
+
+---
+
+## Mean depth per individual 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+a <- ggplot(IDP, aes(depth)) + geom_histogram(fill = "darkseagreen3", colour = "black", alpha = 0.3)
+a + 
+  theme_light()
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+summary(IDP$depth)
+```
+
+## Proportion of missing data per individual
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+a <- ggplot(IMISS, aes(fmiss)) + geom_histogram(fill = "darkseagreen3", colour = "black", alpha = 0.3)
+a + 
+  theme_light()
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+summary(IMISS$fmiss)
+```
+
+### Heterozygosity and inbreeding coefficient per individual
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+a <- ggplot(HET, aes(f)) + geom_histogram(fill = "darkseagreen3", colour = "black", alpha = 0.3)
+a + 
+  theme_light()
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+summary(HET$f)
+```
+
+---
+
+## Quality by depth
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+QD <- data.frame(density = na.omit(VQSR$QD))
+d <- density(QD$density, from = min(QD$density), to = 2)
+d <- data.frame(x = d$x, y = d$y)
+
+a <- ggplot(VQSR, aes(QD)) + geom_density(fill = "darkseagreen3", colour = "black", alpha = 0.5)
+
+a + 
+  theme_light() + 
+  geom_vline(xintercept = 2, linetype = 3, color = "red") + 
+  geom_area(data = d, aes(x=x, y=y), fill = "indianred3", alpha = 0.3) + 
+  labs(caption = "Recommended to filter variants with QD < 2")
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+summary(VQSR$QD)
+```
+
+## Fisher Strand test
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+a <- ggplot(VQSR, aes(FS)) + geom_density(fill = "darkseagreen3", colour = "black", alpha = 0.3)
+a + 
+  theme_light() + 
+  xlim(0, 2) + 
+  labs(caption = "Recommended to filter variants with FS > 60")
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+summary(VQSR$FS)
+```
+
+## Strands Odds Ratio 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+SOR <- data.frame(density = na.omit(VQSR$SOR))
+d <- density(SOR$density, from = 3, to = max(SOR$density))
+d <- data.frame(x = d$x, y = d$y)
+
+a <- ggplot(VQSR, aes(SOR)) + geom_density(fill = "darkseagreen3", colour = "black", alpha = 0.3)
+
+a + 
+  theme_light() + 
+  geom_vline(xintercept = 3, linetype = 3, color = "red") + geom_area(data = d, aes(x=x, y=y), fill = "indianred3", alpha = 0.3) + 
+  labs(caption = "Recommended to filter variants with SOR > 3") + xlim(0, 6)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+summary(VQSR$SOR)
+```
+
+## Root means square mapping quality 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+MQ <- data.frame(density = na.omit(VQSR$MQ))
+d <- density(MQ$density, from = min(MQ$density), to = 50)
+d <- data.frame(x = d$x, y = d$y)
+
+a <- ggplot(VQSR, aes(MQ)) + geom_density(fill = "darkseagreen3", colour = "black", alpha = 0.3)
+
+a + 
+  theme_light() + 
+  geom_vline(xintercept = 50, linetype = 3, color = "red") + geom_area(data = d, aes(x=x, y=y), fill = "indianred3", alpha = 0.3) + 
+  labs(caption = "Recommended to filter variants with MQ < 40") 
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+summary(VQSR$MQ)
+```
+
+## Mapping Quality Rank Sum Test
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+a <- ggplot(VQSR, aes(MQRankSum)) + geom_density(fill = "darkseagreen3", colour = "black", alpha = 0.3)
+
+a + 
+  theme_light() + 
+  geom_vline(xintercept = -12.5, linetype = 3, color = "red") + 
+  labs(caption = "Recommended to filter variants with MQRankSum < -12.5")
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+summary(VQSR$MQRankSum)
+```
+
+## Position Rank Sum Test
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+a <- ggplot(VQSR, aes(ReadPosRankSum)) + geom_density(fill = "darkseagreen3", colour = "black", alpha = 0.3)
+a + 
+  theme_light() + 
+  geom_vline(xintercept = -4, linetype = 3, color = "red") + 
+  labs(caption = "Recommended to filter variants with ReadPosRankSum < -4")
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+summary(VQSR$ReadPosRankSum)
+```

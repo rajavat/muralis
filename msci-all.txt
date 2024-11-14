@@ -1,0 +1,20 @@
+# ALL EVENTS
+tree (((((Pvau, Plus)k, Pmur)i, Psic)g, (((Plev, Ppel)f, (Pwag, Praff)e)d, (Ppit, Ptil)c)b)a, out);
+
+# 1 - mur/ibe ancestor + wi 
+hybridization  g i, b c as y z tau=no,yes  phi = 0.1
+
+# 2 - S-M/bal ancestor + sic 
+hybridization  b d, g Psic as w x tau=no,yes phi = 0.2
+
+# 3 - S-M + WI 
+hybridization d e, z c as u v tau=no,yes phi = 0.3
+
+# 4 - sic + S-M
+hybridization x Psic, e Pwag as s t tau=yes,yes  phi = 0.4
+
+# 5 - WI + ibe
+hybridization c Ppit, i k as q r tau=yes,yes  phi = 0.1
+
+# 6 - mur + S-M
+hybridization i Pmur, t Pwag as o p tau=yes,yes phi = 0.2

@@ -1,0 +1,30 @@
+sed -i '' -e 's/:[0-9-]* / /' non-coding-all.phy
+
+sed -i '' -e 's/chrom1_SRR13999509/^Plus/' non-coding-all.phy
+
+sed -i '' -e 's/chrom1_SRR14009400/^Plev/' non-coding-all.phy
+
+sed -i '' 's/chrom1_SRR14009398/^Ppel/' non-coding-all.phy
+
+sed -i '' 's/chrom1_SRR14001740/^Pvau/' non-coding-all.phy
+
+sed -i '' 's/chrom1_SRR14001928/^Pmur1/' non-coding-all.phy
+
+sed -i '' 's/chrom1_SRR14001930/^Pmur2/' non-coding-all.phy
+
+sed -i '' 's/chrom1_SRR14009411/^PsicS/' non-coding-all.phy
+
+sed -i '' 's/chrom1_SRR14009407/^PsicN/' non-coding-all.phy
+
+sed -i '' 's/chrom1_SRR14009412/^Ppit/' non-coding-all.phy
+
+sed -i '' 's/chrom1_SRR14009410/^Ptil/' non-coding-all.phy
+
+sed -i '' 's/chrom1_SRR14009413/^Pwag/' non-coding-all.phy
+
+sed -i '' 's/chrom1_SRR14009409/^Pfil/' non-coding-all.phy
+
+sed -i '' 's/chrom1_SRR14009418/^out1/' non-coding-all.phy
+
+sed -i '' 's/chrom1_SRR14009403/^out2/' non-coding-all.phy
+

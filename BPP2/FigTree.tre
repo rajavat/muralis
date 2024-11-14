@@ -1,0 +1,7 @@
+#NEXUS
+BEGIN TREES;
+	UTREE 1 = (((((Pvau: 0.000423, Plus: 0.000423)PvauPlus[&height_95%_HPD={0.00018300, 0.00064900}]: 0.001390, Pmur: 0.001812)PvauPlusPmur[&height_95%_HPD={0.00155800, 0.00206300}]: 0.001265, Psic: 0.003078)PvauPlusPmurPsic[&height_95%_HPD={0.00294900, 0.00321300}]: 0.000010, (((Plev: 0.001531, Ppel: 0.001531)PlevPpel[&height_95%_HPD={0.00140400, 0.00165600}]: 0.000237, (Pwag: 0.000230, Pfil: 0.000230)PwagPfil[&height_95%_HPD={0.00000000, 0.00050500}]: 0.001537)PlevPpelPwagPfil[&height_95%_HPD={0.00163300, 0.00189600}]: 0.000013, (Ppit: 0.001610, Ptil: 0.001610)PpitPtil[&height_95%_HPD={0.00133700, 0.00183400}]: 0.000170)PlevPpelPwagPfilPpitPtil[&height_95%_HPD={0.00164400, 0.00190800}]: 0.001308)PvauPlusPmurPsicPlevPpelPwagPfilPpitPtil[&height_95%_HPD={0.00295600, 0.00321400}]: 0.004439, out: 0.007527)PvauPlusPmurPsicPlevPpelPwagPfilPpitPtilout[&height_95%_HPD={0.00723300, 0.00781700}];
+END;
+
+[Species tree with tau as branch lengths and theta as labels, for FigTree.
+In FigTree, choose 95%HPD for Node Bars and label for Node Labels]

@@ -1,0 +1,30 @@
+export PATH="$PATH:/d/home4/vedika/software:/d/home4/vedika/software/bcftools:/d/home4/vedika/software/bwa:/d/home4/vedika/software/samtools-1.19:/d/home4/vedika/software/bedtools:/d/home4/vedika/software/gatk-4.5.0.0:/d/home4/vedika/software/htslib:/d/home4/vedika/software/vcftools:/d/home4/vedika/software/vcftools/src/cpp:/d/home4/vedika/software/plink:/d/home4/vedika/software/bpp:/d/home4/vedika/software/alan-2.1.1/;"
+
+# Check variant count
+bcftools view -H joint-36-chrom1.vcf.gz | wc -l
+
+# Filtration with vcftools
+export IN=joint-36-chrom1.vcf.gz
+export OUT=vcftools
+vcftools --gzvcf $IN --freq2 --out $OUT --maxalleles 2
+vcftools --gzvcf $IN --freq2 --out $OUT --max-alleles 2
+vcftools --gzvcf $IN --depth --out $OUT
+vcftools --gzvcf $IN --site-mean-depth --out $OUT
+vcftools --gzvcf $IN --site-quality --out $OUT
+vcftools --gzvcf $IN --missing-indv --out $OUT
+vcftools --gzvcf $IN --missing-site --out $OUT
+vcftools --gzvcf $IN --het --out $OUT
+
+
+# GATK 
+gatk VariantFiltration \
+	-V joint-36-chrom1.vcf.gz \
+	--filter-expression "QD < 2.0" \
+	--filter-name "QD" \
+	-O j36-chr1-vsqr.vcf.gz \
+
+gatk VariantsToTable \
+	--show-filtered true \
+	-V j36-chr1-vsqr.vcf.gz \
+	-F POS -F TYPE -F QD -F FS -F SOR -F MQ -F MQRankSum -F ReadPosRankSum \
+	-O output.table \
